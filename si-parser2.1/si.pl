@@ -3,8 +3,10 @@
 %%%%%%%%%%%%%%%%%%%%
 
 prog:-
-	see('hello'),	
-	read_new_line.
+	see('input-csh'),
+	open('output-bash', append, OS),
+	read_new_line(OS),
+	close(OS).
 	
 	
 	
@@ -12,13 +14,13 @@ prog:-
 %SK£ADNIA CSH
 %%%%%%%%%%%%%%%%%%%%
 		
-statements(X) --> functions(X), !.
-statements(X) --> loops(X), !.
+statements(OS) --> functions(OS), !.
+statements(OS) --> loops(OS), !.
 
-functions(X) --> echo, !.
-functions(X) --> set, !.
+functions(OS) --> echo(OS), !.
+functions(OS) --> set(OS), !.
 
-loops(X) --> while, !.
+loops(OS) --> while(OS), !.
 
 
 
@@ -26,10 +28,10 @@ loops(X) --> while, !.
 %FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%
 
-echo --> [echo], chars, !.
-echo --> [echo].
+echo(OS) --> [echo], chars, !.
+echo(OS) --> [echo].
 
-set --> [set],  variable, [=], chars, !.
+set(OS) --> [set],  variable, [=], chars, !.
 
 
 
@@ -37,7 +39,7 @@ set --> [set],  variable, [=], chars, !.
 %LOOPS
 %%%%%%%%%%%%%%%%%%%%
 
-while --> ['while'], condition, { read_new_line(end) }.	
+while(OS) --> ['while'], condition, { read_new_line(OS, end)}.	
 	
 	
 
@@ -74,18 +76,38 @@ atom_is_alphabet(N) :-
     atom_chars(N, [L]),
     char_type(L, alpha).
 	
-read_new_line :- 	
+read_new_line(OS) :- 	
 	readln(X),
 	\+ X == end_of_line,
 	writeln(X),
-	phrase(statements(X), X).
+	phrase(statements(OS), X).
 	
-read_new_line(Attr) :-
+read_new_line(OS, Attr) :-
 	repeat,
 	readln(X),
 	writeln(X),
 	atomic_list_concat(L,-,Attr),
 	(L == X -> ! ;
 	\+ X == end_of_line,	
-	phrase(statements(X), X),
-	read_new_line(Attr)).
+	phrase(statements(OS), X),
+	read_new_line(OS, Attr)).
+	
+list_codes([], "").
+
+list_codes([Atom], Codes) :- atom_codes(Atom, Codes).
+
+list_codes([Atom|ListTail], Codes) :-
+        atom_codes(Atom, AtomCodes),
+    append(AtomCodes, ",", AtomCodesWithComma),
+    append(AtomCodesWithComma, ListTailCodes, Codes),
+    list_codes(ListTail, ListTailCodes).
+
+list_string(List, String) :-
+    ground(List),
+    list_codes(List, Codes),
+    atom_codes(String, Codes).
+
+list_string(List, String) :-
+    ground(String),
+    atom_codes(String, Codes),
+    list_codes(List, Codes).
