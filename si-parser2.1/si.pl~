@@ -23,7 +23,6 @@ functions(OS) --> set(OS), !.
 loops(OS) --> while(OS), !.
 loops(OS) --> foreach(OS), !.
 
-condStatements(OS) --> condStatement(OS), !.
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -43,18 +42,6 @@ set(OS) --> [set],  variable, [=], chars, !.
 
 while(OS) --> ['while'], condition, { read_new_line(OS, end)}.
 foreach(OS) --> ['foreach'], check_alphabet, ['('], chars, [')'], { read_new_line(OS, end) }.
-
-%%%%%%%%%%%%%%%%%%%%
-%Conditional statement
-%%%%%%%%%%%%%%%%%%%%
-
-/*condStatement --> ['if'], condition, ['then'], { read_new_line(endif) }.*/
-condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS) }, condStatement1(OS).
-
-condStatement1(OS) --> ['else'], ['if'], condition, ['then'], { read_new_line(OS) }, condStatement1(OS).
-/*condStatement1 --> ['else'], { read_new_line(endif) }, !.*/
-condStatement1(OS) --> ['endif'].
-
 
 
 %%%%%%%%%%%%%%%%%%%%
