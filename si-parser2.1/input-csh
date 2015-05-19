@@ -1,13 +1,5 @@
-set i3 = 0
-while($i<33)
-echo $i
-echo $i
-echo $i
-while($i<$j35)
-echo 
-while($i==$j35)
-set zmienna = 2
-end
-end
-echo $s
-end
+if ( $x > 3 ) then
+echo sadf
+else if ( $rrr < 2 ) then
+echo dsfsdf
+endif
