@@ -47,18 +47,22 @@ set(OS) --> [set],  variable, [=], chars, !.
 %LOOPS
 %%%%%%%%%%%%%%%%%%%%
 
-while(OS) --> ['while'], condition, { read_new_line(OS, end)}.
-foreach(OS) --> ['foreach'], check_alphabet, ['('], chars, [')'], { read_new_line(OS, end) }.
+while(OS) --> ['while'], condition, { read_new_line(OS, [end])}.
+foreach(OS) --> ['foreach'], check_alphabet, ['('], chars, [')'], { read_new_line(OS, [end]) }.
+
+finals(X, OS) --> ['end'].
+finals(X, OS) --> ['endif'].
+finals([H|X], OS) --> ['else'], condStatement(OS).
+
+
 
 %%%%%%%%%%%%%%%%%%%%
 %Conditional statement
 %%%%%%%%%%%%%%%%%%%%
 
-condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, endif)}.
-condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, else) }.
-condStatement(OS) --> ['else'], ['if'], condition, ['then'], { read_new_line(OS, else) }.
-condStatement(OS) --> ['else'], ['if'], condition, ['then'], { read_new_line(OS, endif) }.
-condStatement(OS) --> ['else'], { read_new_line(OS, endif)}.
+condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, [else, endif])}.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -104,28 +108,53 @@ read_new_line(OS, Attr) :-
 	repeat,
 	readln(X),
 	writeln(X),
-	atomic_list_concat(L,-,Attr),
-	(L == X -> ! ;
+	%atomic_list_concat(L,-,Attr),
+	(check_list_attr(Attr, X, X, OS) -> ! ;
 	\+ X == end_of_line,
 	phrase(statements(OS), X),
 	read_new_line(OS, Attr)).
 
-list_codes([], "").
 
-list_codes([Atom], Codes) :- atom_codes(Atom, Codes).
-
-list_codes([Atom|ListTail], Codes) :-
-        atom_codes(Atom, AtomCodes),
-    append(AtomCodes, ",", AtomCodesWithComma),
-    append(AtomCodesWithComma, ListTailCodes, Codes),
-    list_codes(ListTail, ListTailCodes).
-
-list_string(List, String) :-
-    ground(List),
-    list_codes(List, Codes),
-    atom_codes(String, Codes).
-
-list_string(List, String) :-
-    ground(String),
-    atom_codes(String, Codes),
-    list_codes(List, Codes).
+check_list_attr([HA|TA], [HP|TP], [HPO|TPO],OS):-
+	(HA == HP -> phrase(finals([HPO|TPO], OS), [HPO|TPO]), !;
+		(\+ TP == [] -> check_list_attr([HA|TA], TP, [HPO|TPO], OS);
+		(\+ TA == [] -> check_list_attr(TA, [HPO|TPO], [HPO|TPO], OS); !, fail))).
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

@@ -1,0 +1,8 @@
+if ( $x > 3 ) then
+echo sadf
+else if ( $rrr < 2 ) then
+echo dsfsdf
+endif
+if ($abc == 123) then
+set i = abc
+endif
