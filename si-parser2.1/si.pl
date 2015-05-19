@@ -8,15 +8,11 @@ prog:-
 	read_new_line(OS),
 	close(OS).
 
-<<<<<<< HEAD
 prog(Filename):-
 	see(Filename),
 	open('output-bash', append, OS),
 	read_new_line(OS),
 	close(OS).
-=======
-
->>>>>>> origin/master
 
 %%%%%%%%%%%%%%%%%%%%
 %SK£ADNIA CSH
@@ -31,13 +27,9 @@ functions(OS) --> set(OS), !.
 
 loops(OS) --> while(OS), !.
 loops(OS) --> foreach(OS), !.
-<<<<<<< HEAD
 
 condStatements(OS) --> condStatement(OS), !.
-=======
->>>>>>> origin/master
 
-condStatements(OS) --> condStatement(OS), !.
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -62,21 +54,11 @@ foreach(OS) --> ['foreach'], check_alphabet, ['('], chars, [')'], { read_new_lin
 %Conditional statement
 %%%%%%%%%%%%%%%%%%%%
 
-<<<<<<< HEAD
 condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, endif)}.
 condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, else) }.
 condStatement(OS) --> ['else'], ['if'], condition, ['then'], { read_new_line(OS, else) }.
 condStatement(OS) --> ['else'], ['if'], condition, ['then'], { read_new_line(OS, endif) }.
 condStatement(OS) --> ['else'], { read_new_line(OS, endif)}.
-=======
-/*condStatement --> ['if'], condition, ['then'], { read_new_line(endif) }.*/
-condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS) }, condStatement1(OS).
-
-condStatement1(OS) --> ['else'], ['if'], condition, ['then'], { read_new_line(OS) }, condStatement1(OS).
-/*condStatement1 --> ['else'], { read_new_line(endif) }, !.*/
-condStatement1(OS) --> ['endif'].
-
->>>>>>> origin/master
 
 
 %%%%%%%%%%%%%%%%%%%%
