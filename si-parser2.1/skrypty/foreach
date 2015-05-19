@@ -1,0 +1,6 @@
+foreach i1 ( 'u123 asd 1' )
+echo $i1
+end
+foreach i2 (xxx yyy zzz)
+echo $i2
+end
