@@ -104,57 +104,14 @@ read_new_line(OS) :-
 	writeln(X),
 	phrase(statements(OS), X).
 
-read_new_line(OS, Attr) :-
-	repeat,
+read_new_line(OS, Attr):-
 	readln(X),
 	writeln(X),
-	%atomic_list_concat(L,-,Attr),
 	(check_list_attr(Attr, X, X, OS) -> ! ;
-	\+ X == end_of_line,
 	phrase(statements(OS), X),
 	read_new_line(OS, Attr)).
-
 
 check_list_attr([HA|TA], [HP|TP], [HPO|TPO],OS):-
 	(HA == HP -> phrase(finals([HPO|TPO], OS), [HPO|TPO]), !;
 		(\+ TP == [] -> check_list_attr([HA|TA], TP, [HPO|TPO], OS);
 		(\+ TA == [] -> check_list_attr(TA, [HPO|TPO], [HPO|TPO], OS); !, fail))).
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
