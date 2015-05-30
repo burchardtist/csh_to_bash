@@ -1,5 +1,5 @@
 set i3 = 0
-while($i<33)
+while($i>33)
 echo $i
 echo $i
 echo $i

@@ -36,10 +36,9 @@ condStatements(OS) --> condStatement(OS), !.
 %FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%
 
-echo(OS) --> [echo], chars, !.
-echo(OS) --> [echo].
+echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, chars(OS), !; {write(OS, 'echo'), nl(OS)}, !).
 
-set(OS) --> [set],  variable, [=], chars, !.
+set(OS) --> [set], variable(X), [=], chars(OS), !, {write(OS, X), nl(OS)}.
 
 
 
@@ -47,12 +46,12 @@ set(OS) --> [set],  variable, [=], chars, !.
 %LOOPS
 %%%%%%%%%%%%%%%%%%%%
 
-while(OS) --> ['while'], condition, { read_new_line(OS, [end])}.
-foreach(OS) --> ['foreach'], check_alphabet, ['('], chars, [')'], { read_new_line(OS, [end]) }.
+while(OS) --> ['while'], condition(OS), { read_new_line(OS, [end])}.
+foreach(OS) --> ['foreach'], check_alphabet(X), ['('], chars(OS), [')'], { read_new_line(OS, [end]) }.
 
-finals(X, OS) --> ['end'].
-finals(X, OS) --> ['endif'].
-finals([H|X], OS) --> ['else'], condStatement(OS).
+finals(X, OS) --> ['end'], {write(OS, 'done'), nl(OS)}.
+finals(X, OS) --> ['endif'], {write(OS, 'fi'), nl(OS)}.
+finals([H|X], OS) --> ['else'], {write(OS, 'else'), nl(OS)}, condStatement(OS).
 
 
 
@@ -60,8 +59,7 @@ finals([H|X], OS) --> ['else'], condStatement(OS).
 %Conditional statement
 %%%%%%%%%%%%%%%%%%%%
 
-condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, [else, endif])}.
-
+condStatement(OS) --> ['if'], condition(OS), ['then'], { read_new_line(OS, [else, endif])}.
 
 
 
@@ -69,22 +67,24 @@ condStatement(OS) --> ['if'], condition, ['then'], { read_new_line(OS, [else, en
 %UTILS
 %%%%%%%%%%%%%%%%%%%%
 
-variable --> ['$'], check_alphabet.
-variable --> check_alphabet.
+variable(X) --> ['$'], {append(X, ['$'], X1)}, check_alphabet(X2), {X = [X1|X2]}. %wtf
+variable(X) --> check_alphabet(X).
+%variable --> [X], {write(X)},check_alphabet.
 
-condition -->  ['('], variable, condition_sign, check_number_alphabet, [')'].
-condition -->  ['('], variable, condition_sign, variable, [')'].
+condition(OS) -->  ['('], variable, condition_sign(OS), (check_number_alphabet -> [')']; variable, [')']).
+%condition(OS) -->  ['('], variable, condition_sign(OS), variable, [')'].
 
-condition_sign --> ['<'].
-condition_sign --> ['<'], ['='].
-condition_sign --> ['>'].
-condition_sign --> ['<'], ['='].
-condition_sign --> ['='],['='].
+condition_sign(OS) --> ['<'], {write(OS, '-lt'), nl(OS)}.
+condition_sign(OS) --> ['<'], ['='], {write(OS, '-le'), nl(OS)}.
+condition_sign(OS) --> ['>'], {write(OS, '-gt'), nl(OS)}.
+condition_sign(OS) --> ['<'], ['='], {write(OS, '-ge'), nl(OS)}.
+condition_sign(OS) --> ['='],['='], {write(OS, '-eq'), nl(OS)}.
 
-chars --> [_], chars.
-chars --> [].
+chars(OS) --> [X], {write(OS, X)}, chars(OS).
+chars(OS) --> [], {nl(OS)}.
+null --> [].
 
-check_alphabet --> [X], { atom_chars(X, [H|T]), char_type(H, alpha), check_number_alphabet(T)}.
+check_alphabet(X) --> [X], { atom_chars(X, [H|T]), char_type(H, alpha), check_number_alphabet(T)}.
 check_number_alphabet --> [X], { atom_chars(X, L), check_number_alphabet(L) }.
 
 check_number_alphabet([H|T]):- char_type(H, alnum), check_number_alphabet(T).
