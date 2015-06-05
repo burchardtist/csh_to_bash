@@ -1,4 +1,7 @@
-str="AbcDefghj123."
-i3fds='abc'
-$sdfsd3=0
-ffidfd3=sdf
+mkdir ..
+mkdir testx
+cd ..
+cd testx
+rm test
+rmdir test
+ps -a

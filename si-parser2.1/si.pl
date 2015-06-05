@@ -12,7 +12,7 @@ prog(Filename):-
 	see(Filename),
 	open('output-bash', append, OS),
 	read_new_line(OS).
-	
+
 
 %%%%%%%%%%%%%%%%%%%%
 %SK£ADNIA CSH
@@ -24,6 +24,11 @@ statements(OS) --> condStatements(OS), !.
 
 functions(OS) --> echo(OS), !.
 functions(OS) --> set(OS), !.
+functions(OS) --> cd(OS), !.
+functions(OS) --> mkdir(OS), !.
+functions(OS) --> rm(OS), !.
+functions(OS) --> rmdir(OS), !.
+functions(OS) --> ps(OS), !.
 
 loops(OS) --> while(OS), !.
 loops(OS) --> foreach(OS), !.
@@ -40,6 +45,15 @@ echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, chars(OS), !; {write(OS, 'ec
 
 set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4), write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
 
+cd(OS) --> [cd], {write(OS, 'cd ')}, chars(OS), !.
+
+mkdir(OS) --> [mkdir], {write(OS, 'mkdir ')}, chars(OS), !.
+
+rm(OS) --> [rm], {write(OS, 'rm ')}, chars(OS), !.
+
+rmdir(OS) --> [rmdir], {write(OS, 'rmdir ')}, chars(OS), !.
+
+ps(OS) --> [ps], {write(OS, 'ps ')}, chars(OS), !.
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -72,7 +86,7 @@ variable(X) --> check_alphabet(X).
 variable1(X) --> ['$'], check_alphabet(X2), {X = ['$', X2]}.
 variable1(X) --> check_alphabet(X1), {X = [X1]}.
 
-condition(OS) -->  ['('], variable(X), condition_sign(X11), {atomic_list_concat(X, '',Z), atomic_list_concat(X11, ' ', Z11) }, (check_number_alphabet(X4) -> 
+condition(OS) -->  ['('], variable(X), condition_sign(X11), {atomic_list_concat(X, '',Z), atomic_list_concat(X11, ' ', Z11) }, (check_number_alphabet(X4) ->
 																				[')'], {atomic_list_concat(X4, '', Z4), write(OS, '( '), write(OS, Z), write(OS, ' '), write(OS, Z11), write(OS, ' '), write(OS, Z4), write(OS, ' )'), nl(OS)};
 																				variable(X1), [')'], {atomic_list_concat(X1, '', Z1), write(OS, '( '), write(OS, Z1), write(OS, ' )'), nl(OS)}).
 
@@ -84,7 +98,7 @@ condition_sign(X) --> ['='],['='], {X = ['-eq']}.
 
 chars(OS) --> [X], {write(OS, X)}, chars(OS).
 chars(OS) --> [], {nl(OS)}.
-chars1(T,L) --> [X], ({T == []} 
+chars1(T,L) --> [X], ({T == []}
 						-> chars1([X],L)
 						; {append(T,[X],Z)}, chars1(Z,L)
 					 ).
@@ -109,7 +123,7 @@ atom_is_alphabet(N) :-
 read_new_line(OS) :-
 	readln(X, EOL),
 	( EOL == end_of_file
-		-> !,   ( X == [] 
+		-> !,   ( X == []
 					-> close(OS)
 					; writeln(X), phrase(statements(OS), X), close(OS)
 				)
