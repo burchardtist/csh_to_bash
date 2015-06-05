@@ -11,8 +11,8 @@ prog:-
 prog(Filename):-
 	see(Filename),
 	open('output-bash', append, OS),
-	read_new_line(OS),
-	close(OS).
+	read_new_line(OS).
+	
 
 %%%%%%%%%%%%%%%%%%%%
 %SK£ADNIA CSH
@@ -38,7 +38,7 @@ condStatements(OS) --> condStatement(OS), !.
 
 echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, chars(OS), !; {write(OS, 'echo'), nl(OS)}, !).
 
-set(OS) --> [set], variable(X), [=], chars(OS), !, {write(OS, X), nl(OS)}.
+set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, ' ', X3), write(OS, 'set '), atomic_list_concat(X1, ' ', X4), write(OS, X3), write(OS, ' = '), write(OS, X4), nl(OS)}.
 
 
 
@@ -46,7 +46,7 @@ set(OS) --> [set], variable(X), [=], chars(OS), !, {write(OS, X), nl(OS)}.
 %LOOPS
 %%%%%%%%%%%%%%%%%%%%
 
-while(OS) --> ['while'], condition(OS), { read_new_line(OS, [end])}.
+while(OS) --> ['while'], {write(OS, 'while ')}, condition(OS), { read_new_line(OS, [end])}.
 foreach(OS) --> ['foreach'], check_alphabet(X), ['('], chars(OS), [')'], { read_new_line(OS, [end]) }.
 
 finals(X, OS) --> ['end'], {write(OS, 'done'), nl(OS)}.
@@ -67,25 +67,31 @@ condStatement(OS) --> ['if'], condition(OS), ['then'], { read_new_line(OS, [else
 %UTILS
 %%%%%%%%%%%%%%%%%%%%
 
-variable(X) --> ['$'], {append(X, ['$'], X1)}, check_alphabet(X2), {X = [X1|X2]}. %wtf
+variable(X) --> ['$'], check_alphabet(X2), {X = ['$', X2]}.
 variable(X) --> check_alphabet(X).
-%variable --> [X], {write(X)},check_alphabet.
+variable1(X) --> ['$'], check_alphabet(X2), {X = ['$', X2]}.
+variable1(X) --> check_alphabet(X1), {X = [X1]}.
 
-condition(OS) -->  ['('], variable, condition_sign(OS), (check_number_alphabet -> [')']; variable, [')']).
-%condition(OS) -->  ['('], variable, condition_sign(OS), variable, [')'].
+condition(OS) -->  ['('], variable(X), condition_sign(X11), {atomic_list_concat(X, '',Z), atomic_list_concat(X11, ' ', Z11) }, (check_number_alphabet(X4) -> 
+																				[')'], {atomic_list_concat(X4, '', Z4), write(OS, '( '), write(OS, Z), write(OS, ' '), write(OS, Z11), write(OS, ' '), write(OS, Z4), write(OS, ' )'), nl(OS)};
+																				variable(X1), [')'], {atomic_list_concat(X1, '', Z1), write(OS, '( '), write(OS, Z1), write(OS, ' )'), nl(OS)}).
 
-condition_sign(OS) --> ['<'], {write(OS, '-lt'), nl(OS)}.
-condition_sign(OS) --> ['<'], ['='], {write(OS, '-le'), nl(OS)}.
-condition_sign(OS) --> ['>'], {write(OS, '-gt'), nl(OS)}.
-condition_sign(OS) --> ['<'], ['='], {write(OS, '-ge'), nl(OS)}.
-condition_sign(OS) --> ['='],['='], {write(OS, '-eq'), nl(OS)}.
+condition_sign(X) --> ['<'], {X = ['-lt']}.
+condition_sign(X) --> ['<'], ['='], {X = ['-le']}.
+condition_sign(X) --> ['>'], {X = ['-gt']}.
+condition_sign(X) --> ['<'], ['='], {X = ['-ge']}.
+condition_sign(X) --> ['='],['='], {X = ['-eq']}.
 
 chars(OS) --> [X], {write(OS, X)}, chars(OS).
 chars(OS) --> [], {nl(OS)}.
+chars1([],L) --> [X], chars1([X],L).
+chars1(T,L) --> [X], chars1[T,X],L).
+chars1(T,L) --> [], {L = T}.
+
 null --> [].
 
 check_alphabet(X) --> [X], { atom_chars(X, [H|T]), char_type(H, alpha), check_number_alphabet(T)}.
-check_number_alphabet --> [X], { atom_chars(X, L), check_number_alphabet(L) }.
+check_number_alphabet(X1) --> [X], { atom_chars(X, L), check_number_alphabet(L), X1 = L }.
 
 check_number_alphabet([H|T]):- char_type(H, alnum), check_number_alphabet(T).
 check_number_alphabet([]).
@@ -99,10 +105,15 @@ atom_is_alphabet(N) :-
     char_type(L, alpha).
 
 read_new_line(OS) :-
-	readln(X),
-	\+ X == end_of_line,
-	writeln(X),
-	phrase(statements(OS), X).
+	readln(X, EOL),
+	( EOL == end_of_file
+		-> !,   ( X == [] 
+					-> close(OS)
+					; writeln(X), phrase(statements(OS), X), close(OS)
+				)
+		; writeln(X),
+		phrase(statements(OS), X), read_new_line(OS)
+	).
 
 read_new_line(OS, Attr):-
 	readln(X),
