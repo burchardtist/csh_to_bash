@@ -1,12 +1,4 @@
-( $x -gt 3 )
-echo sadf
-else
-( $rrr -lt 2 )
-echo dsfsdf
-fi
-( $abc -eq 123 )
-set i = abc
-fi
-set $ sdfsd3 = 0
-set ffidfd3 = sdf
-set i3fds = '
+str="AbcDefghj123."
+i3fds='abc'
+$sdfsd3=0
+ffidfd3=sdf

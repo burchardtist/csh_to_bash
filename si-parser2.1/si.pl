@@ -38,7 +38,7 @@ condStatements(OS) --> condStatement(OS), !.
 
 echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, chars(OS), !; {write(OS, 'echo'), nl(OS)}, !).
 
-set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, ' ', X3), write(OS, 'set '), atomic_list_concat(X1, ' ', X4), write(OS, X3), write(OS, ' = '), write(OS, X4), nl(OS)}.
+set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4), write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
 
 
 
@@ -84,8 +84,10 @@ condition_sign(X) --> ['='],['='], {X = ['-eq']}.
 
 chars(OS) --> [X], {write(OS, X)}, chars(OS).
 chars(OS) --> [], {nl(OS)}.
-chars1([],L) --> [X], chars1([X],L).
-chars1(T,L) --> [X], chars1[T,X],L).
+chars1(T,L) --> [X], ({T == []} 
+						-> chars1([X],L)
+						; {append(T,[X],Z)}, chars1(Z,L)
+					 ).
 chars1(T,L) --> [], {L = T}.
 
 null --> [].
