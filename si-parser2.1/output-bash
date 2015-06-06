@@ -1,2 +1,0 @@
-ps -a > testfile
-echo testecho > testfile1

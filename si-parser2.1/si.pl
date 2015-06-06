@@ -68,8 +68,8 @@ streamOrChars(OS) --> [], {nl(OS)}, !.
 %LOOPS
 %%%%%%%%%%%%%%%%%%%%
 
-while(OS) --> ['while'], {write(OS, 'while ')}, condition(OS), { read_new_line(OS, [end])}.
-foreach(OS) --> ['foreach'], check_alphabet(X), ['('], chars(OS), [')'], { read_new_line(OS, [end]) }.
+while(OS) --> ['while'], {write(OS, 'while ( ')}, condition(OS), { write(OS, ' )'), nl(OS), write(OS, 'do'), nl(OS), read_new_line(OS, [end])}.
+foreach(OS) --> ['foreach'], {write(OS, 'for ')}, check_alphabet(X), {write(OS, X), write(OS, ' in ')}, ['('], {write(OS,'$( ')}, chars2(OS), [')'], {write(OS,'); do'), nl(OS), read_new_line(OS, [end]) }.
 
 finals(X, OS) --> ['end'], {write(OS, 'done'), nl(OS)}.
 finals(X, OS) --> ['endif'], {write(OS, 'fi'), nl(OS)}.
@@ -87,14 +87,14 @@ condStatement(OS) --> ['if'], condition(OS), ['then'], { read_new_line(OS, [else
 %UTILS
 %%%%%%%%%%%%%%%%%%%%
 
-variable(X) --> ['$'], check_alphabet(X2), {X = ['$', X2]}.
+variable(X) --> ['$'], check_alphabet(X2), {X = [X2]}.
 variable(X) --> check_alphabet(X).
-variable1(X) --> ['$'], check_alphabet(X2), {X = ['$', X2]}.
+variable1(X) --> ['$'], check_alphabet(X2), {X = [X2]}.
 variable1(X) --> check_alphabet(X1), {X = [X1]}.
 
 condition(OS) -->  ['('], variable(X), condition_sign(X11), {atomic_list_concat(X, '',Z), atomic_list_concat(X11, ' ', Z11) }, (check_number_alphabet(X4) ->
-																				[')'], {atomic_list_concat(X4, '', Z4), write(OS, '( '), write(OS, Z), write(OS, ' '), write(OS, Z11), write(OS, ' '), write(OS, Z4), write(OS, ' )'), nl(OS)};
-																				variable(X1), [')'], {atomic_list_concat(X1, '', Z1), write(OS, '( '), write(OS, Z1), write(OS, ' )'), nl(OS)}).
+																				[')'], {atomic_list_concat(X4, '', Z4), write(OS, Z), write(OS, ' '), write(OS, Z11), write(OS, ' '), write(OS, Z4)};
+																				variable(X1), [')'], {atomic_list_concat(X1, '', Z1), write(OS, Z1)}).
 
 condition_sign(X) --> ['<'], {X = ['-lt']}.
 condition_sign(X) --> ['<'], ['='], {X = ['-le']}.
@@ -104,11 +104,17 @@ condition_sign(X) --> ['='],['='], {X = ['-eq']}.
 
 chars(OS) --> [X], {write(OS, X)}, chars(OS).
 chars(OS) --> [], {nl(OS)}.
+
 chars1(T,L) --> [X], ({T == []}
 						-> chars1([X],L)
 						; {append(T,[X],Z)}, chars1(Z,L)
 					 ).
 chars1(T,L) --> [], {L = T}.
+
+chars2(OS) --> [X1], ({cpk(X1)} -> chars2(OS); {write(OS, X1), write(OS, ' ')}, chars2(OS)).
+chars2(OS) --> [].
+
+cpk(X):- atom(X), atom_length(X,1), char_code(X,39) ;atom(X), atom_length(X,1), char_code(X,40) ;atom(X), atom_length(X,1), char_code(X,41) ;atom(X), atom_length(X,1), char_code(X,34). 
 
 null --> [].
 
