@@ -1,7 +1,2 @@
-mkdir ..
-mkdir testx
-cd ..
-cd testx
-rm test
-rmdir test
-ps -a
+ps -a > testfile
+echo testecho > testfile1

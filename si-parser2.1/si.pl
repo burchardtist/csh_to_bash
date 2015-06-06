@@ -21,6 +21,9 @@ prog(Filename):-
 statements(OS) --> functions(OS), !.
 statements(OS) --> loops(OS), !.
 statements(OS) --> condStatements(OS), !.
+statements(OS) --> nullline(OS), !.
+nullline(OS) --> [], {nl(OS)}, !.
+
 
 functions(OS) --> echo(OS), !.
 functions(OS) --> set(OS), !.
@@ -35,25 +38,30 @@ loops(OS) --> foreach(OS), !.
 
 condStatements(OS) --> condStatement(OS), !.
 
-
-
 %%%%%%%%%%%%%%%%%%%%
 %FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%
 
-echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, chars(OS), !; {write(OS, 'echo'), nl(OS)}, !).
+echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, streamOrChars(OS), !; {write(OS, 'echo'), nl(OS)}, !).
+echo(OS) --> [echo], {write(OS, 'echo ')}.
 
 set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4), write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
 
-cd(OS) --> [cd], {write(OS, 'cd ')}, chars(OS), !.
+cd(OS) --> [cd], {write(OS, 'cd ')}, streamOrChars(OS), !.
 
-mkdir(OS) --> [mkdir], {write(OS, 'mkdir ')}, chars(OS), !.
+mkdir(OS) --> [mkdir], {write(OS, 'mkdir ')}, streamOrChars(OS), !.
 
-rm(OS) --> [rm], {write(OS, 'rm ')}, chars(OS), !.
+rm(OS) --> [rm], {write(OS, 'rm ')}, streamOrChars(OS), !.
 
-rmdir(OS) --> [rmdir], {write(OS, 'rmdir ')}, chars(OS), !.
+rmdir(OS) --> [rmdir], {write(OS, 'rmdir ')}, streamOrChars(OS), !.
 
-ps(OS) --> [ps], {write(OS, 'ps ')}, chars(OS), !.
+ps(OS) --> [ps], [-], {write(OS, 'ps -')}, check_alphabet(X), {write(OS, X)}, {write(OS, ' ')}, streamOrChars(OS), !.
+ps(OS) --> [ps], {write(OS, 'ps ')}, streamOrChars(OS), !.
+
+streamOrChars(OS) --> [>], {write(OS, '> ')}, chars(OS), !.
+streamOrChars(OS) --> [X], {write(OS, X)}, [>], {write(OS, ' > ')}, chars(OS), !.
+streamOrChars(OS) --> [X], {write(OS, X)}, streamOrChars(OS), !.
+streamOrChars(OS) --> [], {nl(OS)}, !.
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -74,8 +82,6 @@ finals([H|X], OS) --> ['else'], {write(OS, 'else'), nl(OS)}, condStatement(OS).
 %%%%%%%%%%%%%%%%%%%%
 
 condStatement(OS) --> ['if'], condition(OS), ['then'], { read_new_line(OS, [else, endif])}.
-
-
 
 %%%%%%%%%%%%%%%%%%%%
 %UTILS
