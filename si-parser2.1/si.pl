@@ -36,16 +36,19 @@ functions(OS) --> ps(OS), !.
 loops(OS) --> while(OS), !.
 loops(OS) --> foreach(OS), !.
 
-condStatements(OS) --> condStatement(OS), !.
+condStatements(OS) --> condStatement(OS, 0), !.
 
 %%%%%%%%%%%%%%%%%%%%
 %FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%
 
-echo(OS) --> [echo], (null -> {write(OS, 'echo ')}, streamOrChars(OS), !; {write(OS, 'echo'), nl(OS)}, !).
+echo(OS) --> [echo], (null 
+							-> {write(OS, 'echo ')}, streamOrChars(OS), !
+							; {write(OS, 'echo'), nl(OS)}, !).
 echo(OS) --> [echo], {write(OS, 'echo ')}.
 
-set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4), write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
+set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4),
+	write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
 
 cd(OS) --> [cd], {write(OS, 'cd ')}, streamOrChars(OS), !.
 
@@ -68,12 +71,15 @@ streamOrChars(OS) --> [],  {nl(OS)}, !.
 %LOOPS
 %%%%%%%%%%%%%%%%%%%%
 
-while(OS) --> ['while'], {write(OS, 'while ( ')}, condition(OS), { write(OS, ' )'), nl(OS), write(OS, 'do'), nl(OS), read_new_line(OS, [end])}.
-foreach(OS) --> ['foreach'], {write(OS, 'for ')}, check_alphabet(X), {write(OS, X), write(OS, ' in ')}, ['('], {write(OS,'$( ')}, chars2(OS), [')'], {write(OS,'); do'), nl(OS), read_new_line(OS, [end]) }.
+while(OS) --> ['while'], {write(OS, 'while ( ')}, condition(OS), { write(OS, ' )'),
+	nl(OS), write(OS, 'do'), nl(OS), read_new_line(OS, [end])}.
+ 
+foreach(OS) --> ['foreach'], {write(OS, 'for ')}, check_alphabet(X), {write(OS, X), write(OS, ' in ')},
+	['('], {write(OS,'$( ')}, chars2(OS), [')'], {write(OS,'); do'), nl(OS), read_new_line(OS, [end]) }.
 
 finals(X, OS) --> ['end'], {write(OS, 'done'), nl(OS)}.
 finals(X, OS) --> ['endif'], {write(OS, 'fi'), nl(OS)}.
-finals([H|X], OS) --> ['else'], {write(OS, 'else'), nl(OS)}, condStatement(OS).
+finals([H|X], OS) --> ['else'], condStatement(OS,1).
 
 
 
@@ -81,7 +87,9 @@ finals([H|X], OS) --> ['else'], {write(OS, 'else'), nl(OS)}, condStatement(OS).
 %Conditional statement
 %%%%%%%%%%%%%%%%%%%%
 
-condStatement(OS) --> ['if'], condition(OS), ['then'], { read_new_line(OS, [else, endif])}.
+
+condStatement(OS, B) --> ['if'],  ({B is 0} -> {write(OS, 'if ( ')}; {write(OS, 'elif (')}), condition(OS),
+ ['then'], { write(OS, ' ) then '), nl(OS), read_new_line(OS, [else, endif])}.
 
 %%%%%%%%%%%%%%%%%%%%
 %UTILS
@@ -92,8 +100,8 @@ variable(X) --> check_alphabet(X).
 variable1(X) --> ['$'], check_alphabet(X2), {X = [X2]}.
 variable1(X) --> check_alphabet(X1), {X = [X1]}.
 
-condition(OS) -->  ['('], variable(X), condition_sign(X11), {atomic_list_concat(X, '',Z), atomic_list_concat(X11, ' ', Z11) }, (check_number_alphabet(X4) ->
-																				[')'], {atomic_list_concat(X4, '', Z4), write(OS, Z), write(OS, ' '), write(OS, Z11), write(OS, ' '), write(OS, Z4)};
+condition(OS) -->  ['('], variable([H|_]), condition_sign(X11), { atomic_list_concat(X11, ' ', Z11) }, (check_number_alphabet(X4) ->
+																				[')'], {atomic_list_concat(X4, '', Z4), write(OS, '$'), write(OS, H), write(OS, ' '), write(OS, Z11), write(OS, ' '), write(OS, Z4)};
 																				variable(X1), [')'], {atomic_list_concat(X1, '', Z1), write(OS, Z1)}).
 
 condition_sign(X) --> ['<'], {X = ['-lt']}.
@@ -114,7 +122,8 @@ chars1(T,L) --> [], {L = T}.
 chars2(OS) --> [X1], ({cpk(X1)} -> chars2(OS); {write(OS, X1), write(OS, ' ')}, chars2(OS)).
 chars2(OS) --> [].
 
-cpk(X):- atom(X), atom_length(X,1), char_code(X,39) ;atom(X), atom_length(X,1), char_code(X,40) ;atom(X), atom_length(X,1), char_code(X,41) ;atom(X), atom_length(X,1), char_code(X,34). 
+cpk(X):- atom(X), atom_length(X,1), char_code(X,39) ;atom(X), atom_length(X,1), char_code(X,40) ;atom(X),
+ atom_length(X,1), char_code(X,41) ;atom(X), atom_length(X,1), char_code(X,34). 
 
 null --> [].
 
