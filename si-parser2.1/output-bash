@@ -1,0 +1,8 @@
+for i1 in $( u123 asd 1 ); do
+echo $i1
+done
+for i2 in $( xxx yyy zzz ); do
+echo $i2
+done
+ps -a > testfile
+echo testecho > testfile1
