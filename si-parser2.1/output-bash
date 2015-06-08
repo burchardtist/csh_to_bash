@@ -1,21 +1,5 @@
-echo 
-echo sdfsaf
-echo 123
-echo "abcde"
-for i1 in $( u123 asd 1 ); do
-echo $i1
-done
-for i2 in $( xxx yyy zzz ); do
-echo $i2
-done
-if ( $x -gt 3 ) then 
-echo sadf
-elif ($rrr -lt 2 ) then 
-echo dsfsdf
-fi
-if ( $abc -eq 123 ) then 
-i=abc
-fi
+i=$i+2
+i=$i+2
 i3=0
 while ( $i -gt 33 )
 do
@@ -32,15 +16,9 @@ done
 done
 echo $s
 done
-cd ..
-cd testx
-mkdir testfolder
-ps -a 
-rm test
-rmdir test
-i3fds='abc'
-sdfsd3=0
-ffidfd3=sdf
-ps -a > testfile
-echo testecho > testfile1
-
+for i1 in $( u123 asd 1 ); do
+echo $i1
+done
+for i2 in $( xxx yyy zzz ); do
+echo $i2
+done

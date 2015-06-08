@@ -5,8 +5,7 @@
 prog:-
 	see('input-csh'),
 	open('output-bash', append, OS),
-	read_new_line(OS),
-	close(OS).
+	read_new_line(OS).
 
 prog(Filename):-
 	see(Filename),
@@ -21,7 +20,11 @@ prog(Filename):-
 statements(OS) --> functions(OS), !.
 statements(OS) --> loops(OS), !.
 statements(OS) --> condStatements(OS), !.
+statements(OS) --> [X], ({X == []} 
+	-> {nl(OS)}, !
+	;{write(OS, X)}, statements(OS), !).
 statements(OS) --> nullline(OS), !.
+
 nullline(OS) --> [], {nl(OS)}, !.
 
 
