@@ -34,6 +34,7 @@ functions(OS) --> cd(OS), !.
 functions(OS) --> mkdir(OS), !.
 functions(OS) --> rm(OS), !.
 functions(OS) --> rmdir(OS), !.
+functions(OS) --> cat(OS), !.
 functions(OS) --> ps(OS), !.
 
 loops(OS) --> while(OS), !.
@@ -50,6 +51,8 @@ echo(OS) --> [echo], (null
 							; {write(OS, 'echo'), nl(OS)}, !).
 echo(OS) --> [echo], {write(OS, 'echo ')}.
 
+cat(OS) --> [cat], {write(OS, 'cat ')}, streamOrChars(OS), !.
+
 set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4),
 	write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
 
@@ -64,6 +67,7 @@ rmdir(OS) --> [rmdir], {write(OS, 'rmdir ')}, streamOrChars(OS), !.
 ps(OS) --> [ps], [-], {write(OS, 'ps -')}, check_alphabet(X), {write(OS, X)}, {write(OS, ' ')}, streamOrChars(OS), !.
 ps(OS) --> [ps], {write(OS, 'ps ')}, streamOrChars(OS), !.
 
+// DODAC OPCJE -a, -p, KILL
 streamOrChars(OS) --> [>], {write(OS, '> ')}, streamOrChars(OS), !.
 streamOrChars(OS) --> [X], [>], {write(OS, X), write(OS, ' > ')}, streamOrChars(OS), !.
 streamOrChars(OS) --> [X], {write(OS, X)}, streamOrChars(OS), !.
