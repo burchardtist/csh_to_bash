@@ -67,7 +67,6 @@ rmdir(OS) --> [rmdir], {write(OS, 'rmdir ')}, streamOrChars(OS), !.
 ps(OS) --> [ps], [-], {write(OS, 'ps -')}, check_alphabet(X), {write(OS, X)}, {write(OS, ' ')}, streamOrChars(OS), !.
 ps(OS) --> [ps], {write(OS, 'ps ')}, streamOrChars(OS), !.
 
-// DODAC OPCJE -a, -p, KILL
 streamOrChars(OS) --> [>], {write(OS, '> ')}, streamOrChars(OS), !.
 streamOrChars(OS) --> [X], [>], {write(OS, X), write(OS, ' > ')}, streamOrChars(OS), !.
 streamOrChars(OS) --> [X], {write(OS, X)}, streamOrChars(OS), !.
