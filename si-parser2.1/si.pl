@@ -53,6 +53,9 @@ echo(OS) --> [echo], {write(OS, 'echo ')}.
 
 cat(OS) --> [cat], {write(OS, 'cat ')}, streamOrChars(OS), !.
 
+set(OS) --> [set], variable1(X), [=], ['('], chars1([],X1), !, {atomic_list_concat(X, ' ', X3), atomic_list_concat(X1, ' ', X4),
+	write(OS, X3), write(OS, '=( '), write(OS, X4), nl(OS)}.
+
 set(OS) --> [set], variable1(X), [=], chars1([],X1), !, {atomic_list_concat(X, '', X3), atomic_list_concat(X1, '', X4),
 	write(OS, X3), write(OS, '='), write(OS, X4), nl(OS)}.
 
